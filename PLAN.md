@@ -320,8 +320,11 @@ Players can turn visuals down, but **gameplay effects stay on** (they're synced)
 - [x] Set the real BAR archive name in `modinfo.lua` → `depend`: `Beyond All Reason test-31536-188afa8`. This is the *game* version, which is separate from the engine version.
 - [x] Link the mod into BAR: junction `M:\BAR\Beyond-All-Reason\data\games\BAR-Weather.sdd` → `mod/BAR-Weather.sdd`.
 - [x] Learn how BAR loads gadgets, widgets, modoptions and debug commands (see §2 findings).
-- [ ] Read existing BAR gadgets that change speed, LOS and resourcing.
-- [ ] Verify APIs: `SetWind`, `SetTidal`, `SetAtmosphere`, `SetSunLighting`, `MoveCtrl` speed setters, `SetUnitSensorRadius`, `SetUnitWeaponState` range, LOS-reveal options, and weapon-fire call-ins.
+- [x] Read existing BAR gadgets that change speed, LOS and resourcing. **BAR already has a stacking stat system:** `api_unit_attributes.lua` exposes `GG.UnitAttributes` (`SetUnitModifier`, `SetUnitDefModifier`, `SetUnitWeaponModifier`, ...). Each named source keeps one factor, multipliers from all sources compose, and clearing a source means setting it to `nil`. It covers `losRadius`, `airLosRadius`, `speed`, `maxWantedSpeed`, `maxWeaponRange` and more. Phase 4 effects go through it with the source name `"weather"` instead of calling `SetUnitSensorRadius`/`MoveCtrl` directly, which resolves the stacking risk in §18.
+- [x] Verify APIs (in the Recoil Lua library bundled with the extracted BAR source; stubs generated from engine commit `6e89a1b`, so confirm at runtime on 2026.07.04 when each effect lands):
+  - Synced: `Spring.SetWind(min, max)`, `Spring.SetTidal(strength)`, `Spring.SetUnitResourcing(unitID, res, amount)`, `Spring.AddUnitResource`, `Spring.SetUnitSensorRadius`, `Spring.SetUnitMaxRange`, `Spring.SetUnitWeaponState`, `MoveCtrl.Set{Ground,Air,Gunship}MoveTypeData` with `maxSpeed`/`maxWantedSpeed` keys.
+  - Unsynced: `Spring.SetAtmosphere(params)` (incl. `fogStart`/`fogEnd`/`fogColor`, `skyAxisAngle`), `Spring.SetSunLighting(params)`. BAR's terraform brush uses both live, so they work mid-game.
+  - Night fire-reveal: `Script.SetWatchWeapon(weaponDefID, true)` + `gadget:ProjectileCreated(proID, ownerID, weaponDefID)` to detect fire, then `Spring.SetUnitLosMask` + `Spring.SetUnitLosState(unitID, allyTeam, {los = true})` to reveal the shooter, and clear the mask ~2 s later.
 - [x] Move the old C++/Unreal files into `reference/`.
 
 ### Phase 1: Weather core
@@ -408,7 +411,7 @@ Weather is working if it **changes decisions** without **deciding games**. Track
 
 ## 18. Risks & open questions
 
-- **Stacking with BAR's own modifiers:** speed and LOS changes from other gadgets could conflict. Mitigation: cache base values and apply one combined multiplier.
+- **Stacking with BAR's own modifiers:** resolved by using BAR's `GG.UnitAttributes` with a `"weather"` source (see Phase 0). If a future BAR drops that API, fall back to caching base values and applying one combined multiplier.
 - **Keeping up with BAR updates:** BAR changes often. Keep hooks minimal, avoid overriding BAR files, and pin to tested BAR versions in `modinfo.lua`.
 - **Wind economy swings:** cap wind changes relative to the map's settings.
 - **Visual clarity:** fog, rain and night must never hide UI or make units unreadable. Cap visual density separately from gameplay values.
