@@ -4,6 +4,8 @@ A community mod for [Beyond All Reason](https://www.beyondallreason.info) that a
 
 **Status:** Phases 1–2 are done: weather cycles in game, with a top-bar weather panel, forecast, "who is favored" tooltip and warnings before each change. There are no gameplay or visual effects yet.
 
+Every weather type and its planned effects are listed in [docs/WEATHER_EFFECTS.md](docs/WEATHER_EFFECTS.md) (regenerate with `python tools/gen_effects_table.py` after editing `weather_defs.lua`).
+
 ## Layout
 
 ```
