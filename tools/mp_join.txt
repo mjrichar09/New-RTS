@@ -1,0 +1,11 @@
+// Start script for the FRIEND joining a BAR Weather test hosted with mp_host.txt.
+//   powershell -ExecutionPolicy Bypass -File tools\run_skirmish.ps1 -Script tools\mp_join.txt
+// Set HostIP to the host's public IP (or VPN address). MyPlayerName must match a player
+// name in the host's script. Game, map and BAR version come from the host.
+[GAME]
+{
+	HostIP=REPLACE_WITH_HOST_IP;
+	HostPort=8452;
+	IsHost=0;
+	MyPlayerName=Friend;
+}

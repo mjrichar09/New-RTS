@@ -32,6 +32,14 @@ Targets Recoil engine **2026.07.04**.
    - `/luarules weather status` shows the current state and forecast.
    - `/cheat` then `/luarules weather set storm` or `/luarules weather next` to force changes.
 
+## Testing with a friend
+
+Both players need the **same** engine (2026.07.04), the same BAR version (the one in `depend`), the map, and a byte-identical copy of `mod/BAR-Weather.sdd` (send a zip of your folder rather than having them re-clone, so line endings can't differ).
+
+1. Host: run `tools\run_skirmish.ps1 -Script tools\mp_host.txt`. UDP port 8452 must be reachable (port-forward it, or use a VPN like Tailscale/ZeroTier).
+2. Friend: set `HostIP` in `tools/mp_join.txt` to the host's address, then run `tools\run_skirmish.ps1 -Script tools\mp_join.txt`.
+3. Play past the first change (≥ 6:00) and watch for desync warnings in the console.
+
 ## Settings (modoptions)
 
 Until lobby options are wired up (see PLAN.md §2), these are read from the start script with the defaults below:

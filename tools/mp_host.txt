@@ -1,0 +1,59 @@
+// Start script for a 1v1 BAR Weather test over the network. The HOST runs this one:
+//   powershell -ExecutionPolicy Bypass -File tools\run_skirmish.ps1 -Script tools\mp_host.txt
+// Your friend runs mp_join.txt with HostIP set to your address. UDP port 8452 must reach you
+// (port-forward it, or use a VPN like Tailscale/ZeroTier and use your VPN address).
+// The game starts once both players are connected and ready.
+[GAME]
+{
+	GameType=BAR Weather 0.1.0;
+	MapName=Theta Crystals 1.3;
+	IsHost=1;
+	HostIP=;
+	HostPort=8452;
+	MyPlayerName=Host;
+	StartPosType=0;
+
+	[MODOPTIONS]
+	{
+		// Minutes before the first weather change (default 6). Lower it to see changes sooner.
+		weather_first_change=6;
+	}
+
+	[PLAYER0]
+	{
+		Name=Host;
+		Team=0;
+		Spectator=0;
+	}
+
+	[PLAYER1]
+	{
+		Name=Friend;
+		Team=1;
+		Spectator=0;
+	}
+
+	[TEAM0]
+	{
+		TeamLeader=0;
+		AllyTeam=0;
+		Side=Armada;
+	}
+
+	[TEAM1]
+	{
+		TeamLeader=1;
+		AllyTeam=1;
+		Side=Cortex;
+	}
+
+	[ALLYTEAM0]
+	{
+		NumAllies=0;
+	}
+
+	[ALLYTEAM1]
+	{
+		NumAllies=0;
+	}
+}
